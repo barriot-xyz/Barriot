@@ -65,6 +65,12 @@ namespace Barriot
             => new("wastebasket");
 
         /// <summary>
+        ///     Format a bump result.
+        /// </summary>
+        public static MessageFormat BumpGiven
+            => new("thumbsup");
+
+        /// <summary>
         ///     Returns the internal format of this <see cref="MessageFormat"/>.
         /// </summary>
         /// <returns></returns>

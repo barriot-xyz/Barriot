@@ -75,6 +75,13 @@ namespace Barriot
             }
         }
 
+        public bool CanRedeem()
+        {
+            if (LastRedeemed <= DateTime.UtcNow.AddDays(-1))
+                return true;
+            return false;
+        }
+
         /// <inheritdoc />
         public Task<bool> DeleteAsync()
             => BumpsHelper.DeleteAsync(this);

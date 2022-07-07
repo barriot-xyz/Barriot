@@ -1,45 +1,17 @@
 ﻿using Barriot.Application.Interactions.Attributes;
-using Barriot.Extensions;
 
 namespace Barriot.Application.Interactions.Modules
 {
     [IgnoreBlacklistedUsers]
     public class ProfileModule : BarriotModuleBase
     {
-        private readonly IConfiguration _configuration;
-
-        public ProfileModule(IConfiguration configuration, ILogger<BarriotModuleBase> logger) : base(logger)
+        public ProfileModule(ILogger<BarriotModuleBase> logger) : base(logger)
         {
-            _configuration = configuration;
-        }
 
-        [SlashCommand("daily", "Claims daily rewards.")]
-        public async Task DailyAsync()
-        {
-            var bumps = await BumpsEntity.GetAsync(Context.User.Id);
-
-            if (bumps.LastRedeemed <= DateTime.UtcNow.AddDays(-1))
-            {
-                bumps.LastRedeemed = DateTime.UtcNow;
-                bumps.BumpsToGive++;
-
-                await RespondAsync(
-                    format: MessageFormat.Success,
-                    header: "Daily bump redeemed!");
-            }
-            else
-            {
-                var span = bumps.LastRedeemed - DateTime.UtcNow.AddDays(-1);
-
-                await RespondAsync(
-                    format: MessageFormat.Failure,
-                    header: "Daily bump has already been redeemed!",
-                    context: $"Please try again in {(span.ToReadable())}");
-            }
         }
 
         [AllowAPI(true)]
-        [SlashCommand("profile", "Views your or another user's statistics.")]
+        [SlashCommand("profile", "Views your or another user's profile.")]
         public async Task SlashProfileAsync(RestUser? user = null)
             => await ProfileAsync(user ?? Context.User);
 
@@ -49,20 +21,14 @@ namespace Barriot.Application.Interactions.Modules
         {
             bool isSelfUser = user.Id == Context.User.Id;
 
-            var member = isSelfUser ? Context.Member : await UserEntity.GetAsync(user.Id);
+            var member = isSelfUser 
+                ? Context.Member 
+                : await UserEntity.GetAsync(user.Id);
 
             var bumps = await BumpsEntity.GetAsync(user.Id);
 
             var eb = new EmbedBuilder();
             var cb = new ComponentBuilder();
-
-            if (!isSelfUser)
-            {
-                var bumper = await BumpsEntity.GetAsync(Context.User.Id);
-
-                if (bumper.BumpsToGive > 0 || (await Context.Client.GetApplicationInfoAsync()).Owner.Id == Context.User.Id)
-                    cb.WithButton("Bump this user!", $"bump:{Context.User.Id},{user.Id}", ButtonStyle.Primary);
-            }
 
             cb.WithButton("View stats", $"stats:{Context.User.Id},{user.Id}");
             cb.WithButton("View acknowledgements", $"ack:{Context.User.Id},{user.Id}");
@@ -164,41 +130,6 @@ namespace Barriot.Application.Interactions.Modules
                 header: $"<@{targetId}>'s Acknowledgements.",
                 context: "Rewarded for contributions, regular use of the bot, donations and more.",
                 embed: eb,
-                components: cb);
-        }
-
-        [DoUserCheck]
-        [ComponentInteraction("bump:*,*")]
-        public async Task BumpAsync(ulong _, ulong targetId)
-        {
-            var target = await BumpsEntity.GetAsync(targetId);
-            var origin = await BumpsEntity.GetAsync(Context.User.Id);
-
-            target.ReceivedBumps++;
-
-            if (origin.BumpsToGive > 0)
-                origin.BumpsToGive--;
-
-            bool canGiveMore = origin.BumpsToGive is > 0;
-
-            ComponentBuilder? cb = null;
-            if (canGiveMore)
-                cb = new ComponentBuilder().WithButton("Bump again", $"bump:{Context.User.Id},{targetId}", ButtonStyle.Success);
-
-            if (!Context.Member.HasVoted())
-            {
-                if (cb is null)
-                    cb = new ComponentBuilder();
-
-                cb.WithButton("Vote to get more bumps", style: ButtonStyle.Link, url: _configuration["Domain"] + "vote");
-            }
-
-            await UpdateAsync(
-                format: "thumbsup",
-                header: $"Succesfully bumped <@{targetId}>!",
-                context: canGiveMore
-                    ? "Click on the button below to bump again!"
-                    : null,
                 components: cb);
         }
     }

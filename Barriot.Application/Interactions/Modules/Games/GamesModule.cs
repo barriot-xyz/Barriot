@@ -67,7 +67,8 @@ namespace Barriot.Application.Interactions.Modules
         public async Task PingAsync()
             => await RespondAsync(
                 format: "ping_pong",
-                header: "Pong!");
+                header: "Pong!",
+                context: $"It took me {Stopwatch.ElapsedTicks} ticks to respond!");
 
         [SlashCommand("coinflip", "Flips a coin.")]
         public async Task CoinFlipAsync()

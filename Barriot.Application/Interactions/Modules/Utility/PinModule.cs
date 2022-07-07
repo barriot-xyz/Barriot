@@ -138,7 +138,7 @@ namespace Barriot.Application.Interactions.Modules
         }
 
         [ComponentInteraction("pins-edit:*")]
-        public async Task EditPingsAsync(int page)
+        public async Task EditPinsAsync(int page)
         {
             var pins = await PinEntity.GetManyAsync(Context.User.Id);
 
@@ -175,7 +175,7 @@ namespace Barriot.Application.Interactions.Modules
         }
 
         [ComponentInteraction("pins-editing")]
-        public async Task EditingPingsAsync(ObjectId[] selectedValues)
+        public async Task EditingPinsAsync(ObjectId[] selectedValues)
         {
             var mb = new ModalBuilder()
                 .WithTitle("Edit the note to this pin:")
@@ -186,7 +186,7 @@ namespace Barriot.Application.Interactions.Modules
         }
 
         [ModalInteraction("pins-edited:*")]
-        public async Task EditedPingsAsync(ObjectId id, QueryModal<string> modal)
+        public async Task EditedPinsAsync(ObjectId id, QueryModal<string> modal)
         {
             var pins = await PinEntity.GetManyAsync(Context.User.Id);
 

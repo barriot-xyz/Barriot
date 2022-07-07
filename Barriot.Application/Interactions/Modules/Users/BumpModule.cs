@@ -55,7 +55,9 @@ namespace Barriot.Application.Interactions.Modules
                 var bumps = await BumpsEntity.GetAsync(user.Id);
                 var giver = await BumpsEntity.GetAsync(Context.User.Id);
 
-                if (giver.BumpsToGive <= 0)
+                bool permissionToIgnore = Context.Member.HasFlag(FlagType.Developer);
+
+                if (!permissionToIgnore && giver.BumpsToGive <= 0)
                     await RespondAsync(
                         format: MessageFormat.Failure,
                         header: "You cannot bump someone if you have no bumps to give!",
@@ -63,11 +65,13 @@ namespace Barriot.Application.Interactions.Modules
 
                 else
                 {
-                    giver.BumpsToGive--;
+                    if (!permissionToIgnore)
+                        giver.BumpsToGive--;
+
                     bumps.ReceivedBumps++;
 
                     ComponentBuilder? cb = null;
-                    if (giver.BumpsToGive >= 1)
+                    if (permissionToIgnore || giver.BumpsToGive >= 1)
                         cb = new ComponentBuilder()
                             .WithButton("Bump again!", $"bump:{Context.User.Id},{user.Id},{1}");
 
@@ -86,12 +90,16 @@ namespace Barriot.Application.Interactions.Modules
             var bumps = await BumpsEntity.GetAsync(userId);
             var giver = await BumpsEntity.GetAsync(Context.User.Id);
 
+            bool permissionToIgnore = Context.Member.HasFlag(FlagType.Developer);
+
             count++;
-            giver.BumpsToGive--;
+
+            if (!permissionToIgnore)
+                giver.BumpsToGive--;
             bumps.ReceivedBumps++;
 
             ComponentBuilder? cb = null;
-            if (giver.BumpsToGive >= 1)
+            if (permissionToIgnore || giver.BumpsToGive >= 1)
                 cb = new ComponentBuilder()
                     .WithButton("Bump again!", $"bump:{Context.User.Id},{userId},{count}");
 

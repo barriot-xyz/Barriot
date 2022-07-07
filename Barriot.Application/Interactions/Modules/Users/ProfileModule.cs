@@ -1,4 +1,5 @@
 ﻿using Barriot.Application.Interactions.Attributes;
+using Barriot.Extensions;
 
 namespace Barriot.Application.Interactions.Modules
 {
@@ -118,7 +119,7 @@ namespace Barriot.Application.Interactions.Modules
             var cb = new ComponentBuilder()
                 .WithButton("View stats", $"stats:{Context.User.Id},{targetId}");
 
-            if ((await Context.Client.GetApplicationInfoAsync()).Owner.Id == Context.User.Id)
+            if (await Context.Client.IsApplicationOwnerAsync(Context.User.Id))
             {
                 cb = new();
                 cb.WithButton("Add acknowledgement", $"flag-creating:{Context.User.Id},{targetId}", ButtonStyle.Success);

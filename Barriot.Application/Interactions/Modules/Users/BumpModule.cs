@@ -84,6 +84,7 @@ namespace Barriot.Application.Interactions.Modules
             }
         }
 
+        [DoUserCheck]
         [ComponentInteraction("bump:*,*,*")]
         public async Task BumpFromButtonAsync(ulong _, ulong userId, int count)
         {

@@ -128,7 +128,7 @@ namespace Barriot.Application.Interactions.Modules
                 }
                 var value = paginator.GetPage(page, reminders);
 
-                value.Component.WithButton("Delete reminders from this page", $"reminders-deleting:{page}", ButtonStyle.Secondary);
+                value!.Value.Component.WithButton("Delete reminders from this page", $"reminders-deleting:{page}", ButtonStyle.Secondary);
 
                 return value;
             }

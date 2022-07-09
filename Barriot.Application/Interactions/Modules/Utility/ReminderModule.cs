@@ -76,18 +76,25 @@ namespace Barriot.Application.Interactions.Modules
             [Summary("page", "The reminders page")] int page = 1,
             [Summary("query", "The query to search reminders by")] string search = "")
         {
-            var value = await ListRemindersInternal(search, page);
-
-            if (value is not null)
+            if (search.Length > 50)
                 await RespondAsync(
-                    page: value.Value,
-                    header: "Your reminders:",
-                    context: string.IsNullOrEmpty(search) ? null : $"Only reminders matching \"{search}\" will be displayed.");
+                    error: "Your search query is beyond the maximum query limit!");
 
             else
-                await RespondAsync(
-                    error: "You have no reminders!",
-                    context: "Use ` /remind ` to set reminders.");
+            {
+                var value = await ListRemindersInternal(search, page);
+
+                if (value is not null)
+                    await RespondAsync(
+                        page: value.Value,
+                        header: "Your reminders:",
+                        context: string.IsNullOrEmpty(search) ? null : $"Only reminders matching \"{search}\" will be displayed.");
+
+                else
+                    await RespondAsync(
+                        error: "You have no reminders!",
+                        context: "Use ` /remind ` to set reminders.");
+            }
         }
 
         [ComponentInteraction("reminders-list:*,*")]

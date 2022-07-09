@@ -70,18 +70,25 @@ namespace Barriot.Application.Interactions.Modules
             [Summary("page", "The page you want to view")] int page = 1,
             [Summary("query", "Search for specific pins")] string search = "")
         {
-            var value = await ListPinsInternalAsync(page, search);
-
-            if (value is not null)
+            if (search.Length > 50)
                 await RespondAsync(
-                    page: value.Value,
-                    header: "A list of your pins:",
-                    context: string.IsNullOrEmpty(search) ? null : $"This list only matches entries tied to {search}");
+                    error: "Your search query is beyond the maximum query limit!");
 
             else
-                await RespondAsync(
-                    error: string.IsNullOrEmpty(search) ? "You currently have no pins!" : $"No pins were found that match \"{search}\"!",
-                    context: "Use ` Pin ` in message apps to add a new pin.");
+            {
+                var value = await ListPinsInternalAsync(page, search);
+
+                if (value is not null)
+                    await RespondAsync(
+                        page: value.Value,
+                        header: "A list of your pins:",
+                        context: string.IsNullOrEmpty(search) ? null : $"This list only matches entries tied to {search}");
+
+                else
+                    await RespondAsync(
+                        error: string.IsNullOrEmpty(search) ? "You currently have no pins!" : $"No pins were found that match \"{search}\"!",
+                        context: "Use ` Pin ` in message apps to add a new pin.");
+            }
         }
 
         [ComponentInteraction("pin-list:*,*")]

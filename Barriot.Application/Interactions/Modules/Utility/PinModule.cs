@@ -133,8 +133,8 @@ namespace Barriot.Application.Interactions.Modules
                 if (value is null)
                     return null;
 
-                value.Value.Component.WithButton("Delete pins", $"pins-delete:{page}", ButtonStyle.Danger);
-                value.Value.Component.WithButton("Modify pins", $"pins-edit:{page}", ButtonStyle.Secondary);
+                value.Value.Component.WithButton("Delete pins", $"pins-delete:{page},{search}", ButtonStyle.Danger);
+                value.Value.Component.WithButton("Modify pins", $"pins-edit:{page},{search}", ButtonStyle.Secondary);
 
                 return value;
             }
@@ -142,10 +142,13 @@ namespace Barriot.Application.Interactions.Modules
             return null;
         }
 
-        [ComponentInteraction("pins-edit:*")]
-        public async Task EditPinsAsync(int page)
+        [ComponentInteraction("pins-edit:*,*")]
+        public async Task EditPinsAsync(int page, string search)
         {
             var pins = await PinEntity.GetManyAsync(Context.User.Id);
+
+            if (!string.IsNullOrEmpty(search))
+                pins = pins.Where(x => x.Reason.Contains(search)).ToList();
 
             if (pins.Any())
             {
@@ -226,10 +229,13 @@ namespace Barriot.Application.Interactions.Modules
                     context: "This could happen because you deleted the pin before editing it.");
         }
 
-        [ComponentInteraction("pins-delete:*")]
-        public async Task DeletePinsAsync(int page)
+        [ComponentInteraction("pins-delete:*,*")]
+        public async Task DeletePinsAsync(int page, string search)
         {
             var pins = await PinEntity.GetManyAsync(Context.User.Id);
+
+            if (!string.IsNullOrEmpty(search))
+                pins = pins.Where(x => x.Reason.Contains(search)).ToList();
 
             if (pins.Any())
             {

@@ -22,7 +22,7 @@
             await Task.CompletedTask;
         }
 
-        private async Task OnElapsedAsync(System.Timers.ElapsedEventArgs e)
+        private async Task OnElapsedAsync(System.Timers.ElapsedEventArgs _)
         {
             var reminders = await RemindEntity.GetManyAsync(DateTime.UtcNow);
 

@@ -16,52 +16,13 @@ namespace Barriot.Application.Interactions
         /// </summary>
         protected ILogger<BarriotModuleBase> Logger { get; }
 
-        /// <summary>
-        ///     A stopwatch accessible from the interaction source to check execution time & module building time.
-        /// </summary>
-        protected Stopwatch Stopwatch { get; }
-
-        private bool _isDebug = false;
-
         public BarriotModuleBase(ILogger<BarriotModuleBase> logger)
         {
             Logger = logger;
-            Stopwatch = Stopwatch.StartNew();
         }
 
         #region Execution
 
-        public override void OnModuleBuilding(InteractionService commandService, ModuleInfo module)
-        {
-            if (module.Attributes.Any(x => x is DebugAttribute))
-                _isDebug = true;
-
-            Stopwatch.Stop();
-            if (_isDebug)
-            {
-                Logger.LogDebug("Module ({}) built in {} ms/t ({} ms)",
-                    module.Name,
-                    Stopwatch.ElapsedTicks,
-                    Stopwatch.ElapsedMilliseconds);
-            }
-        }
-
-        public override void BeforeExecute(ICommandInfo command)
-        {
-            if (command.Module.Attributes.Any(x => x is DebugAttribute))
-            {
-                _isDebug = true;
-
-                Logger.LogDebug("Module ({}) in scope for command '{}'",
-                    command.Module.Name,
-                    command.Name);
-                Logger.LogDebug("Starting execution of: '{}' for {} ({})",
-                    command.Name,
-                    Context.User,
-                    Context.User.Id);
-                Stopwatch.Start();
-            }
-        }
         private static int CalculateTier(long currentPoints, ref int ranking)
         {
             int tier = 0;
@@ -99,16 +60,6 @@ namespace Barriot.Application.Interactions
 
         public override async Task AfterExecuteAsync(ICommandInfo command)
         {
-            if (_isDebug)
-            {
-                Stopwatch.Stop();
-                Logger.LogDebug("Execution of '{}' for {} ({}) took {} ms",
-                    command.Name,
-                    Context.User,
-                    Context.User.Id,
-                    Stopwatch.ElapsedMilliseconds);
-            }
-
             if (_hasWonGame)
             {
                 Context.Member.GamesWon++;

@@ -5,7 +5,7 @@ namespace Barriot.Application.Interactions
 {
     public class PostExecutionManager
     {
-        private readonly Dictionary<InteractionCommandError, Func<IResult, BarriotInteractionContext, Task>> _callBack = new();
+        private readonly Dictionary<InteractionCommandError, Func<IResult, BarriotInteractionContext, Task>> _errorCallback = new();
 
         private readonly ILogger<PostExecutionManager> _logger;
 
@@ -13,8 +13,8 @@ namespace Barriot.Application.Interactions
         {
             _logger = logger;
 
-            _callBack[InteractionCommandError.UnknownCommand] = UnknownCommandHandler;
-            _callBack[InteractionCommandError.UnmetPrecondition] = UnmetPreconditionHandler;
+            _errorCallback[InteractionCommandError.UnknownCommand] = UnknownCommandHandler;
+            _errorCallback[InteractionCommandError.UnmetPrecondition] = UnmetPreconditionHandler;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Barriot.Application.Interactions
         {
             if (result.Error.HasValue)
             {
-                if (_callBack.TryGetValue(result.Error.Value, out var value))
+                if (_errorCallback.TryGetValue(result.Error.Value, out var value))
                     await value(result, context);
                 else
                     await FallbackHandler(result, context);

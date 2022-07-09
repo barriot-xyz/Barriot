@@ -17,7 +17,7 @@ namespace Barriot.Application.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            Console.WriteLine(id);
+            _logger.LogInformation("Received GET request with id {}", id);
 
             await Task.CompletedTask;
             
@@ -35,8 +35,11 @@ namespace Barriot.Application.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
+            _logger.LogInformation("Received DELETE request with id {}", id);
+
             await Task.CompletedTask;
-            throw new NotImplementedException();
+
+            return Ok(NoContent());
         }
     }
 }

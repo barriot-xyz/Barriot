@@ -16,10 +16,10 @@
         /// <param name="client"></param>
         /// <param name="interaction"></param>
         /// <param name="responseCallback"></param>
-        internal BarriotInteractionContext(UserEntity entity, DiscordRestClient client, RestInteraction interaction, Func<string, Task> responseCallback)
+        internal BarriotInteractionContext(UserEntity member, DiscordRestClient client, RestInteraction interaction, Func<string, Task> responseCallback)
             : base(client, interaction, responseCallback)
         {
-            Member = entity;
+            Member = member;
         }
     }
 }

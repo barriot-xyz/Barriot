@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Barriot.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Barriot.Application.Controllers
 {
@@ -20,15 +21,18 @@ namespace Barriot.Application.Controllers
             _logger.LogInformation("Received GET request with id {}", id);
 
             await Task.CompletedTask;
-            
-            return Ok(NoContent());
+
+            return new ContentResultBuilder(201)
+                .Build();
         }
 
         [HttpPost]
         public async Task<IActionResult> PostAsync()
         {
             await Task.CompletedTask;
-            throw new NotImplementedException();
+
+            return new ContentResultBuilder(201)
+                .Build();
         }
 
         [HttpDelete]
@@ -39,7 +43,8 @@ namespace Barriot.Application.Controllers
 
             await Task.CompletedTask;
 
-            return Ok(NoContent());
+            return new ContentResultBuilder(201)
+                .Build();
         }
     }
 }

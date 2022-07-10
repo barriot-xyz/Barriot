@@ -1,13 +1,7 @@
 ﻿using Newtonsoft.Json;
 
-namespace Barriot.Application.API.Args
+namespace Barriot.Http.Json
 {
-    public class Translation
-    {
-        [JsonProperty("translatedText")]
-        public string TranslatedText { get; set; } = "";
-    }
-
     public class TranslationRequest
     {
         [JsonProperty("q")]
@@ -21,14 +15,5 @@ namespace Barriot.Application.API.Args
 
         [JsonProperty("api_key")]
         public string ApiKey { get; set; } = "";
-    }
-
-    public class LanguageData
-    {
-        [JsonProperty("code")]
-        public string Code { get; set; } = "";
-
-        [JsonProperty("name")]
-        public string Name { get; set; } = "";
     }
 }

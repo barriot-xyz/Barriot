@@ -30,8 +30,8 @@ jobs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
-- deployment: Deploy
-  displayName: Deploy to VM
+- deployment: Push
+  displayName: Deploy to remote
   environment: 
     name: Deployment (Barriot)
     resourceType: VirtualMachine

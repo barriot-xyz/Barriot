@@ -1,5 +1,5 @@
 ﻿using Barriot.Application.API;
-using Barriot.Application.API.Args;
+using Barriot.Http.Json;
 
 namespace Barriot.Application.Services
 {
@@ -7,7 +7,7 @@ namespace Barriot.Application.Services
     {
         private readonly ITranslateClient _translator;
 
-        private List<IEnumerable<LanguageData>>? _languages;
+        private List<IEnumerable<Language>>? _languages;
 
         private DateTime _lastCheck;
 
@@ -23,7 +23,7 @@ namespace Barriot.Application.Services
         ///     Get all supported languages.
         /// </summary>
         /// <returns></returns>
-        public async Task<List<IEnumerable<LanguageData>>> GetSupportedLanguagesAsync()
+        public async Task<List<IEnumerable<Language>>> GetSupportedLanguagesAsync()
         {
             if (_languages is null || _lastCheck > DateTime.UtcNow.AddDays(1))
             {
@@ -31,7 +31,7 @@ namespace Barriot.Application.Services
 
                 var languages = await _translator.GetSupportedLanguagesAsync();
 
-                List<IEnumerable<LanguageData>> data = new();
+                List<IEnumerable<Language>> data = new();
 
                 var cursor = _alphabet.Length / 2;
                 for (int i = 0; i < _alphabet.Length; i += cursor)

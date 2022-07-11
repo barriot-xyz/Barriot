@@ -69,27 +69,27 @@ namespace Barriot.Application.Interactions.Modules
 
         [DoUserCheck]
         [ComponentInteraction("avatar:*,*")]
-        public async Task AvatarAsync(ulong _, Pointer target)
+        public async Task AvatarAsync(ulong _, Pointer<RestUser> target)
         {
             var eb = new EmbedBuilder()
-                .WithImageUrl(target.GetValue<RestUser>().GetAvatarUrl(ImageFormat.Auto, 256));
+                .WithImageUrl(target.Value.GetAvatarUrl(ImageFormat.Auto, 256));
 
             await UpdateAsync(
                 format: "selfie",
-                header: $"<@{target.GetValue<RestUser>().Id}>'s avatar:",
+                header: $"<@{target.Value.Id}>'s avatar:",
                 embed: eb);
         }
 
         [DoUserCheck]
         [ComponentInteraction("banner:*,*")]
-        public async Task BannerAsync(ulong _, Pointer target)
+        public async Task BannerAsync(ulong _, Pointer<RestUser> target)
         {
             var eb = new EmbedBuilder()
-                .WithImageUrl(target.GetValue<RestUser>().GetBannerUrl(ImageFormat.Auto, 256));
+                .WithImageUrl(target.Value.GetBannerUrl(ImageFormat.Auto, 256));
 
             await UpdateAsync(
                 format: "sunrise_over_mountains",
-                header: $"<@{target.GetValue<RestUser>().Id}>'s banner:",
+                header: $"<@{target.Value.Id}>'s banner:",
                 embed: eb);
         }
     }

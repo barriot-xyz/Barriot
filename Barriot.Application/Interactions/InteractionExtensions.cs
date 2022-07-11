@@ -19,6 +19,8 @@ namespace Barriot.Application.Interactions
             service.AddTypeReader<ObjectId>(new ObjectIdComponentConverter());
             service.AddTypeReader<Guid>(new Converters.GuidConverter());
 
+            service.AddGenericTypeReader(typeof(Pointer<>), typeof(PointerConverter<>));
+
             await service.AddModulesAsync(typeof(Program).Assembly, app.Services);
 
             if (app.Configuration.GetValue<bool>("BuildCommands"))

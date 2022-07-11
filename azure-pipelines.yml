@@ -31,7 +31,7 @@ jobs:
       configuration: '$(buildConfiguration)'
 
 - deployment: Push
-  displayName: Deploy to remote
+  displayName: Remote
   environment: 
     name: Deployment (Barriot)
     resourceType: VirtualMachine
@@ -41,3 +41,5 @@ jobs:
       deploy:   
           steps:
           - script: echo "Hello world"
+                    dir
+            displayName: Deployment Result

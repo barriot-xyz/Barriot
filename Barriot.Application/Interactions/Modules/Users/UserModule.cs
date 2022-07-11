@@ -8,12 +8,9 @@ namespace Barriot.Application.Interactions.Modules
     {
         private readonly IConfiguration _configuration;
 
-        private readonly UserService _service;
-
-        public UserModule(IConfiguration config, UserService service, ILogger<BarriotModuleBase> logger) : base(logger)
+        public UserModule(IConfiguration config, ILogger<BarriotModuleBase> logger) : base(logger)
         {
             _configuration = config;
-            _service = service;
         }
 
         [AllowAPI(true)]
@@ -26,12 +23,12 @@ namespace Barriot.Application.Interactions.Modules
         public async Task UserInfoAsync(RestUser user)
         {
             var cb = new ComponentBuilder()
-                .WithButton("View avatar", $"avatar:{Context.User.Id},{user.Id}", ButtonStyle.Primary);
+                .WithButton("View avatar", $"avatar:{Context.User.Id},{Pointer.Create(user)}", ButtonStyle.Primary);
 
-            var rUser = await _service.GetOneAsync(user.Id);
+            var rUser = await Context.Client.GetUserAsync(user.Id);
 
             if (!string.IsNullOrEmpty(rUser.BannerId))
-                cb.WithButton("View banner", $"banner:{Context.User.Id},{user.Id}", ButtonStyle.Primary);
+                cb.WithButton("View banner", $"banner:{Context.User.Id},{Pointer.Create(rUser)}", ButtonStyle.Primary);
 
             var eb = new EmbedBuilder()
                 .AddField("Joined Discord on:", user.CreatedAt);
@@ -72,31 +69,27 @@ namespace Barriot.Application.Interactions.Modules
 
         [DoUserCheck]
         [ComponentInteraction("avatar:*,*")]
-        public async Task AvatarAsync(ulong _, ulong targetId)
+        public async Task AvatarAsync(ulong _, Pointer target)
         {
-            var rUser = await _service.GetOneAsync(targetId);
-
             var eb = new EmbedBuilder()
-                .WithImageUrl(rUser.GetAvatarUrl(ImageFormat.Auto, 256));
+                .WithImageUrl(target.GetValue<RestUser>().GetAvatarUrl(ImageFormat.Auto, 256));
 
             await UpdateAsync(
                 format: "selfie",
-                header: $"<@{targetId}>'s avatar:",
+                header: $"<@{target.GetValue<RestUser>().Id}>'s avatar:",
                 embed: eb);
         }
 
         [DoUserCheck]
         [ComponentInteraction("banner:*,*")]
-        public async Task BannerAsync(ulong _, ulong targetId)
+        public async Task BannerAsync(ulong _, Pointer target)
         {
-            var rUser = await _service.GetOneAsync(targetId);
-
             var eb = new EmbedBuilder()
-                .WithImageUrl(rUser.GetBannerUrl(ImageFormat.Auto, 256));
+                .WithImageUrl(target.GetValue<RestUser>().GetBannerUrl(ImageFormat.Auto, 256));
 
             await UpdateAsync(
                 format: "sunrise_over_mountains",
-                header: $"<@{targetId}>'s banner:",
+                header: $"<@{target.GetValue<RestUser>().Id}>'s banner:",
                 embed: eb);
         }
     }

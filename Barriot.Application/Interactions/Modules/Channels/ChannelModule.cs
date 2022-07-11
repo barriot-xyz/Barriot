@@ -122,8 +122,7 @@ namespace Barriot.Application.Interactions.Modules
             else
                 await RespondAsync(
                     error: "The amount of messages to prune is invalid.",
-                    context: $"Your value: `{modal.Result}` does not match the required 1-100.",
-                    description: "Consider using the `clone` command if you want to rid a channel of all of it's messages.");
+                    context: $"Your value: `{modal.Result}` does not match the required 1-100.");
         }
     }
 }

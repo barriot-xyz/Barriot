@@ -1,4 +1,4 @@
-﻿using Barriot.Application.API.Args;
+﻿using Barriot.Http.Json;
 using Newtonsoft.Json;
 
 namespace Barriot.Application.API
@@ -11,8 +11,8 @@ namespace Barriot.Application.API
             => _httpClient = client;
 
         /// <inheritdoc/>
-        public async Task<List<LanguageData>> GetSupportedLanguagesAsync()
-            => JsonConvert.DeserializeObject<List<LanguageData>>(await _httpClient.GetStringAsync("/languages"))
+        public async Task<List<Language>> GetSupportedLanguagesAsync()
+            => JsonConvert.DeserializeObject<List<Language>>(await _httpClient.GetStringAsync("/languages"))
             ?? new();
 
         /// <inheritdoc/>

@@ -72,39 +72,50 @@ namespace Barriot.Application.Interactions.Modules
         }
 
         [SlashCommand("reminders", "Lists your current reminders.")]
-        public async Task ListRemindersAsync([Summary("page", "The reminders page")] int page = 1)
+        public async Task ListRemindersAsync(
+            [Summary("page", "The reminders page")] int page = 1,
+            [Summary("query", "The query to search reminders by")] string search = "")
         {
-            var value = await ListRemindersInternal(page);
-
-            if (value is not null)
+            if (search.Length > 50)
                 await RespondAsync(
-                    page: value.Value,
-                    header: "Your reminders:");
+                    error: "Your search query is beyond the maximum query limit!");
 
             else
-                await RespondAsync(
-                    error: "You have no reminders!",
-                    context: "Use ` /remind ` to set reminders.");
+            {
+                var value = await ListRemindersInternal(search, page);
+
+                if (value is not null)
+                    await RespondAsync(
+                        page: value.Value,
+                        header: "Your reminders:",
+                        context: string.IsNullOrEmpty(search) ? null : $"Only reminders matching \"{search}\" will be displayed.");
+
+                else
+                    await RespondAsync(
+                        error: "You have no reminders!",
+                        context: "Use ` /remind ` to set reminders.");
+            }
         }
 
-        [ComponentInteraction("reminders-list:*")]
-        public async Task ListRemindersFromButtonAsync(int page)
+        [ComponentInteraction("reminders-list:*,*")]
+        public async Task ListRemindersFromButtonAsync(string search, int page)
         {
-            var value = await ListRemindersInternal(page);
+            var value = await ListRemindersInternal(search, page);
 
             if (value is not null)
                 await UpdateAsync(
                     page: value.Value,
-                    header: "Your reminders:");
+                    header: "Your reminders:",
+                    context: string.IsNullOrEmpty(search) ? null : $"Only reminders matching \"{search}\" will be displayed.");
 
             else
                 await UpdateAsync(
-                    error: "You have no reminders!",
+                    error: string.IsNullOrEmpty(search) ? "You have no reminders!" : $"No reminders were found matching \"{search}\"!",
                     context: "Use ` /remind ` to set reminders.");
 
         }
 
-        private async Task<Page?> ListRemindersInternal(int page)
+        private async Task<Page?> ListRemindersInternal(string search, int page)
         {
             if (page < 1)
                 page = 1;
@@ -128,7 +139,10 @@ namespace Barriot.Application.Interactions.Modules
                 }
                 var value = paginator.GetPage(page, reminders);
 
-                value.Component.WithButton("Delete reminders from this page", $"reminders-deleting:{page}", ButtonStyle.Secondary);
+                if (value is null)
+                    return null;
+
+                value!.Value.Component.WithButton("Delete reminders from this page", $"reminders-deleting:{page},{search}", ButtonStyle.Secondary);
 
                 return value;
             }
@@ -136,14 +150,23 @@ namespace Barriot.Application.Interactions.Modules
             return null;
         }
 
-        [ComponentInteraction("reminders-deleting:*")]
-        public async Task DeletingRemindersAsync(int page)
+        [ComponentInteraction("reminders-deleting:*,*")]
+        public async Task DeletingRemindersAsync(int page, string search)
         {
             var reminders = await RemindEntity.GetManyAsync(Context.User);
 
             if (!reminders.Any())
                 await UpdateAsync(
                     error: "You have no reminders to delete!");
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                reminders = reminders.Where(x => x.Message.Contains(search)).ToList();
+
+                if (!reminders.Any())
+                    await UpdateAsync(
+                        error: "You have no reminders to delete matching your query!");
+            }
 
             else
             {

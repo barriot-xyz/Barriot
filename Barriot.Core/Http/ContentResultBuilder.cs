@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Barriot.Application.Controllers.Builders
+﻿namespace Barriot.Http
 {
     /// <summary>
     ///     Represents a class that builds a new <see cref="ContentResult"/>.
@@ -46,14 +44,7 @@ namespace Barriot.Application.Controllers.Builders
         ///     Builds a new <see cref="ContentResult"/> from the provided values from <see cref="WithPayload(string)"/> and <see cref="WithStatusCode(int)"/>.
         /// </summary>
         /// <returns>The <see cref="ContentResult"/> that should be returned as <see cref="IActionResult"/>.</returns>
-        public ContentResult Build()
-        {
-            return new ContentResult()
-            {
-                Content = _payload,
-                StatusCode = _code,
-                ContentType = _contentType
-            };
-        }
+        public (string, int, string) Fetch()
+            => (_payload, _code, _contentType);
     }
 }

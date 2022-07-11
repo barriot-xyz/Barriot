@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace Barriot.Application.Controllers.Args
+namespace Barriot.Http.Json
 {
-    public class VoteReceivedArgs
+    public class Vote
     {
         [JsonProperty("bot")]
         public ulong BotId { get; set; }

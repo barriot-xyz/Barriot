@@ -20,7 +20,7 @@
             await Task.CompletedTask;
         }
 
-        private async Task OnElapsedAsync(System.Timers.ElapsedEventArgs e)
+        private static async Task OnElapsedAsync(System.Timers.ElapsedEventArgs _)
         {
             await TicTacToeEntity.DeleteManyAsync();
             await ConnectEntity.DeleteManyAsync();

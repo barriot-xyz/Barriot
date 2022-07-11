@@ -23,8 +23,21 @@
         /// <param name="pageNumber">The page number to create a page for.</param>
         /// <param name="entries">The entries for all pages.</param>
         /// <returns>A <see cref="Page"/> for the respective <paramref name="pageNumber"/></returns>
-        public Page GetPage(int pageNumber, List<T> entries, params object[] wildCards)
+        public Page? GetPage(int pageNumber, List<T> entries, string search = "", Func<List<T>, string, List<T>>? query = null)
         {
+            bool isSearching = !string.IsNullOrEmpty(search);
+
+            if (isSearching)
+            {
+                if (query is null)
+                    throw new ArgumentNullException(nameof(query), "Cannot be null if search parameter is provided");
+
+                entries = query(entries, search);
+            }
+
+            if (!entries.Any())
+                return null;
+
             var maxPages = (int)Math.Ceiling((double)entries.Count / pageSize);
 
             if (pageNumber > maxPages)
@@ -48,8 +61,8 @@
 
             var cid = _customId + ":";
 
-            if (wildCards.Any())
-                cid += string.Join(',', wildCards) + ",";
+            if (isSearching)
+                cid += (search + ",");
 
             var cb = new ComponentBuilder()
                 .WithButton(

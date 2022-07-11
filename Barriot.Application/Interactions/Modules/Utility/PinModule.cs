@@ -67,31 +67,40 @@ namespace Barriot.Application.Interactions.Modules
 
         [SlashCommand("pins", "View all your current pins.")]
         public async Task ListPinsAsync(
-            [Summary("page", "The page you want to view")] int page = 1)
+            [Summary("page", "The page you want to view")] int page = 1,
+            [Summary("query", "Search for specific pins")] string search = "")
         {
-            var value = await ListPinsInternalAsync(page);
-
-            if (value is not null)
+            if (search.Length > 50)
                 await RespondAsync(
-                    page: value.Value,
-                    header: "A list of all your pins:",
-                    context: "Click on the button below to remove any pins from this page.");
+                    error: "Your search query is beyond the maximum query limit!");
 
             else
-                await RespondAsync(
-                    error: "You currently have no pins!",
-                    context: "Use ` Pin ` in message apps to add a new pin.");
+            {
+                var value = await ListPinsInternalAsync(page, search);
+
+                if (value is not null)
+                    await RespondAsync(
+                        page: value.Value,
+                        header: "A list of your pins:",
+                        context: string.IsNullOrEmpty(search) ? null : $"This list only matches entries tied to {search}");
+
+                else
+                    await RespondAsync(
+                        error: string.IsNullOrEmpty(search) ? "You currently have no pins!" : $"No pins were found that match \"{search}\"!",
+                        context: "Use ` Pin ` in message apps to add a new pin.");
+            }
         }
 
-        [ComponentInteraction("pin-list:*")]
-        public async Task ListPinsFromButtonAsync(int page)
+        [ComponentInteraction("pin-list:*,*")]
+        public async Task ListPinsFromButtonAsync(string search, int page)
         {
-            var value = await ListPinsInternalAsync(page);
+            var value = await ListPinsInternalAsync(page, search);
 
             if (value is not null)
                 await UpdateAsync(
                     page: value.Value,
-                    header: "A list of all your pins:");
+                    header: "A list of your pins:",
+                    context: string.IsNullOrEmpty(search) ? null : $"This list only matches entries tied to {search}");
 
             else
                 await UpdateAsync(
@@ -99,7 +108,7 @@ namespace Barriot.Application.Interactions.Modules
                     context: "Use ` Pin ` in message apps to add a new pin.");
         }
 
-        private async Task<Page?> ListPinsInternalAsync(int page)
+        private async Task<Page?> ListPinsInternalAsync(int page, string search)
         {
             if (page < 1)
                 page = 1;
@@ -126,10 +135,13 @@ namespace Barriot.Application.Interactions.Modules
                         })
                         .Build();
                 }
-                var value = paginator.GetPage(page, pins);
+                var value = paginator.GetPage(page, pins, search, (x, s) => x.Where(x => x.Reason.Contains(s)).ToList());
 
-                value.Component.WithButton("Delete pins", $"pins-delete:{page}", ButtonStyle.Danger);
-                value.Component.WithButton("Modify pins", $"pins-edit:{page}", ButtonStyle.Secondary);
+                if (value is null)
+                    return null;
+
+                value.Value.Component.WithButton("Delete pins", $"pins-delete:{page},{search}", ButtonStyle.Danger);
+                value.Value.Component.WithButton("Modify pins", $"pins-edit:{page},{search}", ButtonStyle.Secondary);
 
                 return value;
             }
@@ -137,10 +149,13 @@ namespace Barriot.Application.Interactions.Modules
             return null;
         }
 
-        [ComponentInteraction("pins-edit:*")]
-        public async Task EditPinsAsync(int page)
+        [ComponentInteraction("pins-edit:*,*")]
+        public async Task EditPinsAsync(int page, string search)
         {
             var pins = await PinEntity.GetManyAsync(Context.User.Id);
+
+            if (!string.IsNullOrEmpty(search))
+                pins = pins.Where(x => x.Reason.Contains(search)).ToList();
 
             if (pins.Any())
             {
@@ -221,10 +236,13 @@ namespace Barriot.Application.Interactions.Modules
                     context: "This could happen because you deleted the pin before editing it.");
         }
 
-        [ComponentInteraction("pins-delete:*")]
-        public async Task DeletePinsAsync(int page)
+        [ComponentInteraction("pins-delete:*,*")]
+        public async Task DeletePinsAsync(int page, string search)
         {
             var pins = await PinEntity.GetManyAsync(Context.User.Id);
+
+            if (!string.IsNullOrEmpty(search))
+                pins = pins.Where(x => x.Reason.Contains(search)).ToList();
 
             if (pins.Any())
             {

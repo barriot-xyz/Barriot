@@ -12,7 +12,7 @@
             await PopulateInboxAsync();
         }
 
-        private async Task PopulateInboxAsync()
+        private static async Task PopulateInboxAsync()
         {
             List<string> messages = new();
             foreach (var file in Directory.GetFiles(Path.Combine("Files", "Messages")))

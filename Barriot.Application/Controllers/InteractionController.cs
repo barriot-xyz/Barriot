@@ -1,4 +1,3 @@
-using Barriot.Application.Controllers.Builders;
 using Barriot.Application.Interactions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,8 +40,16 @@ namespace Barriot.Application.Controllers
             => Ok(Content("Interaction endpoint available.", _contentType));
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync()
+        public async Task PostAsync()
         {
+            async Task ReturnAsync(int statusCode, string payload)
+            {
+                HttpContext.Response.StatusCode = statusCode;
+                HttpContext.Response.ContentType = "application/json";
+                await HttpContext.Response.WriteAsync(payload).ConfigureAwait(false);
+                await HttpContext.Response.CompleteAsync().ConfigureAwait(false);
+            }
+
             var signature = HttpContext.Request.Headers["X-Signature-Ed25519"];
             var timestamp = HttpContext.Request.Headers["X-Signature-Timestamp"];
             using var sr = new StreamReader(HttpContext.Request.Body);
@@ -51,10 +58,7 @@ namespace Barriot.Application.Controllers
             if (!_client.IsValidHttpInteraction(_configuration["PublicToken"], signature, timestamp, body))
             {
                 _logger.LogError("Failure (Invalid interaction signature)");
-
-                return new ContentResultBuilder(401)
-                    .WithPayload("Failed to verify interaction!")
-                    .Build();
+                await ReturnAsync(401, "Failed to verify interaction!");
             }
 
             RestInteraction interaction = await _client.ParseHttpInteractionAsync(_configuration["PublicToken"], signature, timestamp, body, _apiManager.Predicate);
@@ -62,27 +66,18 @@ namespace Barriot.Application.Controllers
             if (interaction is RestPingInteraction pingInteraction)
             {
                 _logger.LogInformation("Successful (Ping)");
-
-                return new ContentResultBuilder(200)
-                    .WithPayload(pingInteraction.AcknowledgePing())
-                    .Build();
+                await ReturnAsync(200, pingInteraction.AcknowledgePing());
             }
 
-            string payload = string.Empty;
-
-            var context = new BarriotInteractionContext(await UserEntity.GetAsync(interaction.User.Id), _client, interaction, (str) =>
-            {
-                payload = str;
-                return Task.CompletedTask;
-            });
+            var context = new BarriotInteractionContext(
+                member: await UserEntity.GetAsync(interaction.User.Id),
+                client: _client, 
+                interaction: interaction, 
+                responseCallback: async (str) => await ReturnAsync(200, str));
 
             var result = await _service.ExecuteCommandAsync(context, _serviceProvider);
 
             await _postExecManager.RunAsync(result, context);
-
-            return new ContentResultBuilder(200)
-                .WithPayload(payload)
-                .Build();
         }
     }
 }

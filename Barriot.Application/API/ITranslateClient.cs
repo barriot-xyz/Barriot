@@ -1,4 +1,4 @@
-﻿using Barriot.Application.API.Args;
+﻿using Barriot.Http.Json;
 
 namespace Barriot.Application.API
 {
@@ -8,7 +8,7 @@ namespace Barriot.Application.API
         ///     Gets all supported languages in the current API version.
         /// </summary>
         /// <returns></returns>
-        Task<List<LanguageData>> GetSupportedLanguagesAsync();
+        Task<List<Language>> GetSupportedLanguagesAsync();
 
         /// <summary>
         ///     Translates the given input to a translated string.

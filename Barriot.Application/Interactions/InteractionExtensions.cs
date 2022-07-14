@@ -1,5 +1,7 @@
 ﻿using Barriot.Application.Interactions.Converters;
 using MongoDB.Bson;
+using Transference;
+using Transference.Discord;
 
 namespace Barriot.Application.Interactions
 {
@@ -19,7 +21,7 @@ namespace Barriot.Application.Interactions
             service.AddTypeReader<ObjectId>(new ObjectIdComponentConverter());
             service.AddTypeReader<Guid>(new Converters.GuidConverter());
 
-            service.AddGenericTypeReader(typeof(Pointer<>), typeof(PointerConverter<>));
+            service.AddGenericTypeReader(typeof(Pointer<>), typeof(UlongPointerReader<>));
 
             await service.AddModulesAsync(typeof(Program).Assembly, app.Services);
 

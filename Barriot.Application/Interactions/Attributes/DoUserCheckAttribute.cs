@@ -6,19 +6,23 @@
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public sealed class DoUserCheckAttribute : PreconditionAttribute
     {
-        public override async Task<PreconditionResult> CheckRequirementsAsync(IInteractionContext context, ICommandInfo commandInfo, IServiceProvider services)
+        public override async Task<PreconditionResult> CheckRequirementsAsync(IInteractionContext ctx, ICommandInfo commandInfo, IServiceProvider services)
         {
             await Task.CompletedTask;
 
-            if (context.Interaction is not RestMessageComponent component)
+            if (ctx.Interaction is not RestMessageComponent component)
                 return BarriotPreconditionResult.FromError(
                     reason: nameof(DoUserCheckAttribute) + " is only supported for message components.");
 
+            if (ctx is not BarriotInteractionContext context)
+                return BarriotPreconditionResult.FromError(
+                    reason: $"Cannot operate on modules that don't inherit {nameof(BarriotInteractionContext)}");
+
             else
             {
-                var param = component.Data.CustomId.Split(':');
+                var param = context.SegmentMatches.First().Value;
 
-                if (param.Length > 1 && ulong.TryParse(param[1].Split(',')[0], out ulong id))
+                if (ulong.TryParse(param, out ulong id))
                 {
                     if (context.User.Id != id)
                     {

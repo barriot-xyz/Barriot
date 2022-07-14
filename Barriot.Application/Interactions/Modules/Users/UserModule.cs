@@ -1,5 +1,6 @@
 ﻿using Barriot.Application.Interactions.Attributes;
-using Barriot.Application.Services;
+using Transference.Discord;
+using Transference;
 
 namespace Barriot.Application.Interactions.Modules
 {
@@ -23,12 +24,12 @@ namespace Barriot.Application.Interactions.Modules
         public async Task UserInfoAsync(RestUser user)
         {
             var cb = new ComponentBuilder()
-                .WithButton("View avatar", $"avatar:{Context.User.Id},{Pointer.Create(user)}", ButtonStyle.Primary);
+                .WithButton("View avatar", $"avatar:{Context.User.Id},{UlongPointer.Create(user)}", ButtonStyle.Primary);
 
             var rUser = await Context.Client.GetUserAsync(user.Id);
 
             if (!string.IsNullOrEmpty(rUser.BannerId))
-                cb.WithButton("View banner", $"banner:{Context.User.Id},{Pointer.Create(rUser)}", ButtonStyle.Primary);
+                cb.WithButton("View banner", $"banner:{Context.User.Id},{UlongPointer.Create(rUser)}", ButtonStyle.Primary);
 
             var eb = new EmbedBuilder()
                 .AddField("Joined Discord on:", user.CreatedAt);

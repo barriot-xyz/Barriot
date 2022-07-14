@@ -14,9 +14,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Discord.Net.Interactions" Version="3.7.2" />
-		<PackageReference Include="MailKit" Version="3.2.0" />
+		<PackageReference Include="MailKit" Version="3.3.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.2.0" />
-		<PackageReference Include="MongoDB.Driver" Version="2.16.0" />
+		<PackageReference Include="MongoDB.Driver" Version="2.16.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -38,6 +38,15 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Barriot.Core\Barriot.Core.csproj" />
 	  <ProjectReference Include="..\Barriot.Data\Barriot.Data.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Transference">
+	    <HintPath>..\..\Transference\Transference.Discord\bin\Debug\net6.0\Transference.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Transference.Discord">
+	    <HintPath>..\..\Transference\Transference.Discord\bin\Debug\net6.0\Transference.Discord.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>

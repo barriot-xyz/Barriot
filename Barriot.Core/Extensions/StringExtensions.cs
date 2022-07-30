@@ -22,6 +22,9 @@ namespace Barriot.Extensions
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the length of maxlength is below 0 after the finalizer has been reduced from it.</exception>
         public static string Reduce(this string input, int maxLength, bool killAtWhitespace = false, string finalizer = "...")
         {
+            if (input is null)
+                return string.Empty;
+
             if (input.Length > maxLength)
             {
                 maxLength -= (finalizer.Length + 1); // reduce the length of the finalizer + a single integer to convert to valid range.

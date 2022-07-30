@@ -23,7 +23,7 @@ namespace Barriot.Extensions
         public static string Reduce(this string input, int maxLength, bool killAtWhitespace = false, string finalizer = "...")
         {
             if (input is null)
-                return string.Empty;
+                return string.Empty + finalizer;
 
             if (input.Length > maxLength)
             {

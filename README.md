@@ -9,7 +9,7 @@ A fully REST Discord bot implementing exclusively QOL &amp; entertainment for al
 
 ### 🔗 Commands
 
-- Please visit the [command docs](https://github.com/Rozen4334/Barriot/blob/master/COMMANDS.md) to see all commands and their use cases.
+- Please visit the [wiki](https://github.com/Rozen4334/Barriot/wiki) to see all commands and their use cases.
 > Command documentation is also available on each individual command description. If a command is very unclear, and documentation does not clarify well enough, please open an issue covering it's lack of context.
 
 ### 🔏 Privacy

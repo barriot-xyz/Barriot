@@ -44,7 +44,7 @@ The latest command is replaced by its previous entry. Command details are not st
 Each user has a unique ID provided by Discord. 
 Barriot uses this ID to associate you with it's unique entities, such as polls & reminders.
 Additionally, Barriot implements functions like translation which require a language to be specified prior to translation. 
-These preferred options are defined along with others in Barriots user-entity collection
+These preferred options are defined along with others in Barriots user-entity collection.
 
 ## 🗃️ Data storage
 

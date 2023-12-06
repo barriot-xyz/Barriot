@@ -9,16 +9,16 @@ A fully REST Discord bot implementing exclusively QOL &amp; entertainment for al
 
 ### 🔗 Commands
 
-- Please visit the [wiki](https://github.com/Rozen4334/Barriot/wiki) to see all commands and their use cases.
+- Please visit the [wiki](https://github.com/csmir/Barriot/wiki) to see all commands and their use cases.
 > Command documentation is also available on each individual command description. If a command is very unclear, and documentation does not clarify well enough, please open an issue covering it's lack of context.
 
 ### 🔏 Privacy
 
-- Please read the [privacy policy](https://github.com/Rozen4334/Barriot/blob/master/PRIVACY.md) carefully if you have any concern about how Barriot handles your information.
+- Please read the [privacy policy](https://github.com/csmir/Barriot/blob/master/PRIVACY.md) carefully if you have any concern about how Barriot handles your information.
 
 ### 🗑️ Data removal
 
-- If you wish to have all stored data associated to you removed, Feel free to get into contact at `contact@rozen.one` or on any other platform. Please include your Discord user ID to speed up the process.
+- If you wish to have all stored data associated to you removed, Feel free to get into contact at `contact@csmir.me` or on any other platform. Please include your Discord user ID to speed up the process.
 > Data will be removed up until the point of re-interacting with Barriot. If you wish to avoid this, please block the bot on Discord.
 
 ### ❌ Issues
